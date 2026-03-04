@@ -1,0 +1,26 @@
+{
+    "productName": "ElectronScript",
+    "version": "0.1.0",
+    "identifier": "com.electronscript.app",
+    "build": {
+        "frontendDist": "../src",
+        "devUrl": "http://localhost:1420",
+        "beforeDevCommand": "",
+        "beforeBuildCommand": ""
+    },
+    "app": {
+        "withGlobalTauri": true,
+        "windows": [
+            {
+                "title": "Electron Script Injector",
+                "width": 700,
+                "height": 560,
+                "resizable": true,
+                "center": true
+            }
+        ],
+        "security": {
+            "csp": null
+        }
+    }
+}

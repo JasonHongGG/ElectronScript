@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electron Script Injector</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <h1>⚡ Script Injector</h1>
+      <p class="subtitle">Electron App 自動化腳本注入工具</p>
+    </header>
+
+    <!-- App Cards Container -->
+    <div id="app-cards" class="cards-container">
+      <!-- Cards will be dynamically generated -->
+    </div>
+
+    <!-- Log Panel -->
+    <div class="log-panel">
+      <div class="log-header">
+        <span>📋 操作紀錄</span>
+        <button id="clear-log" class="btn-icon" title="清除紀錄">🗑️</button>
+      </div>
+      <div id="log-output" class="log-output"></div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

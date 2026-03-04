@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+
+# Tauri
+src-tauri/target/
+src-tauri/Cargo.lock
+
+# Optional: IDEs
+.vscode/
