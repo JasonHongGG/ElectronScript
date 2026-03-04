@@ -3,10 +3,10 @@
     "version": "0.1.0",
     "identifier": "com.electronscript.app",
     "build": {
-        "frontendDist": "../src",
+        "frontendDist": "../dist",
         "devUrl": "http://localhost:1420",
-        "beforeDevCommand": "",
-        "beforeBuildCommand": ""
+        "beforeDevCommand": "npm run dev-ui",
+        "beforeBuildCommand": "npm run build-ui"
     },
     "app": {
         "withGlobalTauri": true,
