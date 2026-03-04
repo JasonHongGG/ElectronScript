@@ -20,58 +20,13 @@ document.getElementById('clear-log').addEventListener('click', () => {
     logOutput.innerHTML = '';
 });
 
-// ── CDP 注入器 (純前端 fetch + WebSocket，不需要 Puppeteer) ──
+// ── CDP 注入器 (透過 Rust 後端，繞過所有瀏覽器限制) ──
 async function cdpInject(port, snippet) {
-    // Step 1: 透過 HTTP 取得 CDP 頁面列表
-    const res = await fetch(`http://127.0.0.1:${port}/json`);
-    const targets = await res.json();
-
-    // 過濾出不是 devtools 的頁面
-    const pages = targets.filter(t =>
-        t.type === 'page' && !t.url.startsWith('devtools://')
-    );
-
-    if (pages.length === 0) {
-        throw new Error('找不到適合的頁面');
-    }
-
-    let injectedCount = 0;
-
-    for (const page of pages) {
-        const wsUrl = page.webSocketDebuggerUrl;
-        if (!wsUrl) continue;
-
-        await new Promise((resolve, reject) => {
-            const ws = new WebSocket(wsUrl);
-            const timeout = setTimeout(() => {
-                ws.close();
-                reject(new Error('WebSocket 連線逾時'));
-            }, 5000);
-
-            ws.onopen = () => {
-                // 送出 Runtime.evaluate CDP 指令
-                ws.send(JSON.stringify({
-                    id: 1,
-                    method: 'Runtime.evaluate',
-                    params: { expression: snippet.code },
-                }));
-            };
-
-            ws.onmessage = (event) => {
-                clearTimeout(timeout);
-                injectedCount++;
-                ws.close();
-                resolve();
-            };
-
-            ws.onerror = (err) => {
-                clearTimeout(timeout);
-                reject(new Error('WebSocket 連線失敗'));
-            };
-        });
-    }
-
-    return injectedCount;
+    const count = await invoke('inject_script', {
+        port: parseInt(port),
+        code: snippet.code,
+    });
+    return count;
 }
 
 // ── 狀態管理 ────────────────────────────────────────────────
@@ -170,8 +125,8 @@ async function waitForPort(port, timeoutMs = 10000) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
         try {
-            const res = await fetch(`http://127.0.0.1:${port}/json/version`);
-            if (res.ok) return true;
+            await invoke('get_cdp_targets', { port: parseInt(port) });
+            return true;
         } catch {
             // 還沒好
         }
