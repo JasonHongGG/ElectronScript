@@ -17,6 +17,8 @@
   "dependencies": {
     "@inquirer/prompts": "^8.3.0",
     "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-dialog": "^2.6.0",
+    "@tauri-apps/plugin-os": "^2.3.2",
     "puppeteer-core": "^24.37.5"
   },
   "devDependencies": {

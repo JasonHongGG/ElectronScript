@@ -4,36 +4,97 @@ use std::process::Command;
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 
-/// 檢查指定的進程是否正在運行
-#[tauri::command]
-fn check_process(process_name: String) -> Result<bool, String> {
-    let output = Command::new("tasklist")
-        .args(["/FI", &format!("IMAGENAME eq {}", process_name), "/NH"])
-        .output()
-        .map_err(|e| format!("無法執行 tasklist: {}", e))?;
+use sysinfo::System;
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(stdout.contains(&process_name))
+/// 取得系統上特定名稱的所有進程，包含其 PID 與啟動參數
+#[tauri::command]
+fn get_instances(exe_name: String) -> Result<Vec<Value>, String> {
+    let mut sys = System::new_all();
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+
+    let mut instances = Vec::new();
+
+    // 依據 exe 名稱尋找 (忽略大小寫後綴)
+    let search_name = exe_name.to_lowercase();
+    let search_name = search_name.strip_suffix(".exe").unwrap_or(&search_name);
+
+    for (pid, process) in sys.processes() {
+        let p_name = process.name().to_string_lossy().to_lowercase();
+        let p_name = p_name.strip_suffix(".exe").unwrap_or(&p_name);
+
+        if p_name == search_name {
+            let cmd = process.cmd();
+            let mut has_debug_port = false;
+            let mut workdir = String::new();
+            let mut port = 0;
+
+            for arg in cmd.iter() {
+                let arg_str = arg.to_string_lossy();
+
+                // 檢查是否有 debug port (例如: --remote-debugging-port=9222)
+                if arg_str.starts_with("--remote-debugging-port=") {
+                    has_debug_port = true;
+                    if let Some(p) = arg_str.split('=').nth(1) {
+                        port = p.parse().unwrap_or(0);
+                    }
+                }
+
+                // 試圖找出 workdir (通常 VS Code 的工作目錄會是最後一個獨立的無橫線參數，或者是 --folder-uri)
+                // 這裡採用簡單的啟發式：如果是絕對路徑且存在
+                if !arg_str.starts_with("--") && std::path::Path::new(arg_str.as_ref()).is_dir() {
+                    workdir = arg_str.to_string();
+                } else if arg_str.starts_with("--folder-uri=") {
+                    let uri = arg_str.strip_prefix("--folder-uri=").unwrap_or("");
+                    let decode = uri
+                        .replace("file:///", "")
+                        .replace("%3A", ":")
+                        .replace("%5C", "\\")
+                        .replace("/", "\\");
+                    workdir = decode;
+                }
+            }
+
+            instances.push(serde_json::json!({
+                "pid": pid.as_u32(),
+                "name": process.name().to_string_lossy(),
+                "has_debug_port": has_debug_port,
+                "port": port,
+                "workdir": workdir,
+                "cmd": cmd.iter().map(|s| s.to_string_lossy().to_string()).collect::<Vec<String>>()
+            }));
+        }
+    }
+
+    Ok(instances)
 }
 
-/// 強制關閉指定的進程
+/// 透過 PID 強制關閉單一進程
 #[tauri::command]
-fn kill_process(process_name: String) -> Result<bool, String> {
-    let output = Command::new("taskkill")
-        .args(["/IM", &process_name, "/F"])
-        .output()
-        .map_err(|e| format!("無法執行 taskkill: {}", e))?;
+fn kill_instance(pid: u32) -> Result<bool, String> {
+    let mut sys = System::new_all();
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
-    Ok(output.status.success())
+    if let Some(process) = sys.process(sysinfo::Pid::from_u32(pid)) {
+        Ok(process.kill())
+    } else {
+        Err(format!("找不到 PID: {}", pid))
+    }
 }
 
-/// 啟動指定的 exe 並帶上 --remote-debugging-port
+/// 啟動指定的 exe 並帶上 --remote-debugging-port 以及可選的工作目錄
 #[tauri::command]
-fn launch_app(exe_path: String, port: u16) -> Result<bool, String> {
-    Command::new(&exe_path)
-        .arg(format!("--remote-debugging-port={}", port))
-        .spawn()
-        .map_err(|e| format!("無法啟動 {}: {}", exe_path, e))?;
+fn launch_app(exe_path: String, port: u16, workdir: Option<String>) -> Result<bool, String> {
+    let mut cmd = Command::new(&exe_path);
+    cmd.arg(format!("--remote-debugging-port={}", port));
+
+    if let Some(dir) = workdir {
+        if !dir.is_empty() {
+            cmd.arg(&dir);
+        }
+    }
+
+    cmd.spawn()
+        .map_err(|e| format!("無法啟裁 {}: {}", exe_path, e))?;
 
     Ok(true)
 }
@@ -125,9 +186,10 @@ async fn inject_script(port: u16, code: String) -> Result<u32, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
-            check_process,
-            kill_process,
+            get_instances,
+            kill_instance,
             launch_app,
             get_cdp_targets,
             cdp_evaluate,
