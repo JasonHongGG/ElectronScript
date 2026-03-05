@@ -24,6 +24,22 @@ fn get_instances(exe_name: String) -> Result<Vec<Value>, String> {
 
         if p_name == search_name {
             let cmd = process.cmd();
+
+            // 跳過無法讀取命令列的進程（通常是權限不足，這些都是子進程）
+            if cmd.is_empty() {
+                continue;
+            }
+
+            // Electron 子進程 (renderer, gpu-process, utility 等) 的命令列都帶有 --type= 參數
+            // 只有主進程（擁有實際視窗的進程）不帶 --type=，所以跳過所有帶 --type= 的子進程
+            let is_child_process = cmd.iter().any(|arg| {
+                let s = arg.to_string_lossy();
+                s.starts_with("--type=")
+            });
+            if is_child_process {
+                continue;
+            }
+
             let mut has_debug_port = false;
             let mut workdir = String::new();
             let mut port = 0;
