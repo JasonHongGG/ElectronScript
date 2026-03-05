@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use futures_util::{SinkExt, StreamExt};
 use serde_json::Value;
 use std::process::Command;
