@@ -516,16 +516,15 @@ body {
 
 /* Base button override for header */
 .btn-primary {
-  background: var(--accent-blue);
-  color: white;
-  border: none;
+  background: rgba(76, 122, 255, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(76, 122, 255, 0.3);
 }
 
 .btn-primary:hover {
-  background: #3b66df;
+  background: var(--accent-blue);
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(76, 122, 255, 0.4);
+  border-color: var(--accent-blue);
 }
 
 .btn-warning {
@@ -844,66 +843,196 @@ body {
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
 }
 
-/* ── Log Panel ────────────────────────────────── */
-.log-panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-dim);
+/* ── Global Persistent Log Panel ────────────────── */
+.global-log-panel {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 80px);
+  /* consistent with app padding */
+  max-width: 1200px;
+  height: 280px;
+  background: rgba(15, 15, 22, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* slightly stronger border */
   border-radius: var(--radius-md);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  z-index: 900;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   overflow: hidden;
-  margin-top: 8px;
-  animation: fadeSlideUp 0.6s ease 0.4s forwards;
-  opacity: 0;
-  transform: translateY(10px);
 }
 
-.log-header {
+/* Hidden state for Home */
+.global-log-panel.hidden-on-home {
+  transform: translate(-50%, 150%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Collapsed state */
+.global-log-panel.collapsed {
+  height: 48px;
+}
+
+.log-panel-header {
+  height: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
-  background: rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid var(--border-dim);
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  user-select: none;
+}
+
+.log-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.log-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  box-shadow: 0 0 8px var(--text-muted);
+}
+
+.log-status-dot.glow-blue {
+  background: var(--accent-blue);
+  box-shadow: 0 0 12px var(--accent-blue);
+  animation: pulse-blue 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pulse-blue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 122, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(76, 122, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 122, 255, 0);
+  }
+}
+
+.log-status-dot.glow-green {
+  background: var(--accent-green);
+  box-shadow: 0 0 12px var(--accent-green);
+  animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.log-status-dot.glow-green {
+  background: var(--accent-green);
+  box-shadow: 0 0 12px var(--accent-green);
+}
+
+.log-icon {
+  width: 16px;
+  height: 16px;
   color: var(--text-secondary);
 }
 
-.log-header span {
+.log-title-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* Marquee: Shows the last message when collapsed */
+.log-marquee {
+  font-family: 'Consolas', 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  max-width: 60%;
+}
+
+.global-log-panel.collapsed .log-marquee {
+  opacity: 1;
+}
+
+.log-panel-actions {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.log-header i {
-  width: 14px;
-  height: 14px;
-}
-
-.btn-icon {
-  background: none;
+.btn-icon-glass {
+  background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text-muted);
-  transition: all var(--transition-fast);
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  border-radius: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.btn-icon:hover {
-  color: var(--text-primary);
+.btn-icon-glass i {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+
+.btn-icon-glass:hover {
   background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Rotate chevron when collapsed */
+.global-log-panel.collapsed #toggle-log-icon {
+  transform: rotate(180deg);
 }
 
 .log-output {
-  padding: 14px 18px;
-  height: 160px;
+  flex: 1;
+  padding: 16px 20px;
   overflow-y: auto;
   font-family: 'Consolas', 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   line-height: 1.8;
+  background: transparent;
+
+  /* Custom thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.log-output::-webkit-scrollbar {
+  width: 6px;
+}
+
+.log-output::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.log-output::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Log Slide-in Animation */
