@@ -16,8 +16,6 @@ document.getElementById('titlebar-close').addEventListener('click', () => appWin
 const viewHome = document.getElementById('view-home');
 const viewApp = document.getElementById('view-app');
 const viewScripts = document.getElementById('view-scripts');
-const navHeader = document.getElementById('nav-header');
-const navTitle = document.getElementById('current-view-title');
 
 const homeAppsGrid = document.getElementById('home-apps-grid');
 const appInstancesList = document.getElementById('app-instances-list');
@@ -25,7 +23,8 @@ const scriptsGrid = document.getElementById('scripts-grid');
 const logOutput = document.getElementById('log-output');
 
 // Buttons
-const btnBack = document.getElementById('btn-back');
+const btnBackApp = document.getElementById('btn-back-app');
+const btnBackScripts = document.getElementById('btn-back-scripts');
 const btnToScripts = document.getElementById('btn-to-scripts');
 const btnAppOpen = document.getElementById('btn-app-open');
 const btnAppRestart = document.getElementById('btn-app-restart');
@@ -80,13 +79,11 @@ function switchView(viewId) {
     if (viewId === 'home') {
         viewHome.classList.remove('hidden');
         viewHome.classList.add('active');
-        navHeader.classList.add('hidden');
         currentAppKey = null;
         stopAutoRefresh();
     } else {
         document.getElementById(`view-${viewId}`).classList.remove('hidden');
         document.getElementById(`view-${viewId}`).classList.add('active');
-        navHeader.classList.remove('hidden');
 
         // Contextual buttons in nav header
         if (viewId === 'scripts') {
@@ -97,12 +94,12 @@ function switchView(viewId) {
     }
 }
 
-function handleBackAction() {
-    if (currentView === 'scripts') {
-        goAppView(currentAppKey);
-    } else if (currentView === 'app') {
-        goHome();
-    }
+function handleBackToHome() {
+    goHome();
+}
+
+function handleBackToApp() {
+    goAppView(currentAppKey);
 }
 
 function goHome() {
@@ -113,7 +110,6 @@ function goHome() {
 async function goAppView(appKey) {
     currentAppKey = appKey;
     const app = apps[appKey];
-    navTitle.textContent = app.name;
     document.getElementById('app-view-name').innerHTML = `<i data-lucide="${appKey === 'vscode' ? 'code' : 'cpu'}"></i> ${app.name}`;
 
     switchView('app');
@@ -124,7 +120,9 @@ async function goAppView(appKey) {
 }
 
 function goScriptsView() {
-    navTitle.textContent = `${apps[currentAppKey].name} - 腳本庫`;
+    const isVscode = currentAppKey === 'vscode';
+    const appIcon = isVscode ? 'code' : 'cpu';
+    document.getElementById('scripts-view-name').innerHTML = `<i data-lucide="${appIcon}"></i> ${apps[currentAppKey].name} - 腳本庫`;
     switchView('scripts');
     renderScriptsGrid();
 }
@@ -224,7 +222,7 @@ function renderScriptsGrid() {
     for (const [sKey, script] of Object.entries(defs)) {
         const isStop = sKey.toLowerCase().includes('stop');
         const iconName = isStop ? 'square-terminal' : 'syringe';
-        const btnClass = isStop ? 'btn-stop' : 'btn-inject';
+        const btnClass = 'btn-warning'; // Unify script execution buttons to yellow
 
         const card = document.createElement('div');
         card.className = 'script-card';
@@ -415,7 +413,8 @@ async function handleRunScript(snippetKey) {
 }
 
 // ── Event Listeners ──────────────────────────────────────────
-btnBack.addEventListener('click', handleBackAction);
+btnBackApp.addEventListener('click', handleBackToHome);
+btnBackScripts.addEventListener('click', handleBackToApp);
 btnToScripts.addEventListener('click', goScriptsView);
 btnAppOpen.addEventListener('click', handleAppOpen);
 btnAppRestart.addEventListener('click', handleAppRestart);

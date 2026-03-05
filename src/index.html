@@ -29,16 +29,7 @@
         <span>Electron Injector</span>
       </div>
 
-      <!-- Navigation Sidebar (Optional, or just a back button in headers) -->
-      <div id="nav-header" class="nav-header hidden">
-        <div class="nav-left">
-          <button id="btn-back" class="btn btn-icon btn-nav"><i data-lucide="arrow-left"></i> 返回</button>
-        </div>
-        <div id="current-view-title" class="nav-title">VS Code</div>
-        <div class="nav-right">
-          <button id="btn-to-scripts" class="btn btn-icon btn-nav"><i data-lucide="library"></i> 腳本庫</button>
-        </div>
-      </div>
+      <!-- Navigation Sidebar is removed and back buttons are combined with titles -->
 
       <!-- View: Home (入口) -->
       <div id="view-home" class="view active home-premium-layout">
@@ -92,11 +83,17 @@
       <!-- View: App Management (獨立 App 管理頁面) -->
       <div id="view-app" class="view hidden">
         <div class="app-management-header">
-          <h2 id="app-view-name">應用程式名稱</h2>
+          <div class="app-title-group" id="btn-back-app" title="返回主頁">
+            <div class="back-button">
+              <i data-lucide="arrow-left"></i>
+            </div>
+            <h2 id="app-view-name">應用程式名稱</h2>
+          </div>
           <div class="app-view-actions">
             <button id="btn-app-open" class="btn btn-primary"><i data-lucide="plus"></i> 智慧開啟</button>
             <button id="btn-app-restart" class="btn btn-warning"><i data-lucide="refresh-cw"></i> 重啟掛載</button>
             <button id="btn-app-closeall" class="btn btn-danger"><i data-lucide="power"></i> 全部關閉</button>
+            <button id="btn-to-scripts" class="btn btn-warning"><i data-lucide="library"></i> 腳本庫</button>
           </div>
         </div>
 
@@ -120,8 +117,15 @@
       <!-- View: Script Library (獨立腳本區塊) -->
       <div id="view-scripts" class="view hidden">
         <div class="script-library-header">
-          <h2>腳本庫 (Script Library)</h2>
-          <p class="subtitle text-sm">選擇腳本並注入到指定的應用程式實例中</p>
+          <div class="app-title-group" id="btn-back-scripts" title="返回應用">
+            <div class="back-button">
+              <i data-lucide="arrow-left"></i>
+            </div>
+            <div>
+              <h2 id="scripts-view-name">腳本庫 (Script Library)</h2>
+              <p class="subtitle text-sm" style="margin-top: 4px; color: var(--text-muted);">選擇腳本並注入到指定的應用程式實例中</p>
+            </div>
+          </div>
         </div>
 
         <div id="scripts-grid" class="cards-grid">

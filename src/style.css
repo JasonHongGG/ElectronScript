@@ -199,38 +199,49 @@ body {
   display: none !important;
 }
 
-/* ── Navigation Header ────────────────────────── */
-.nav-header {
+/* ── Header Combined Titles & Nav ────────────────────────── */
+.app-title-group {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-dim);
+  gap: 16px;
+  cursor: pointer;
+  padding: 8px 16px 8px 8px;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  margin-left: -8px;
+  /* Offset to align left edge visually */
+  width: fit-content;
 }
 
-.nav-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.02em;
-}
-
-.btn-nav {
-  padding: 6px 12px;
-  background: transparent;
-  border-color: transparent;
-  color: var(--text-secondary);
-}
-
-.btn-nav i,
-.btn-nav svg {
-  margin-right: 6px;
-}
-
-.btn-nav:hover {
+.app-title-group:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.app-title-group:hover .back-button {
+  background: var(--text-primary);
+  color: var(--bg-app);
+  transform: translateX(-4px);
+}
+
+.app-title-group h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
 }
 
 /* ── Home Premium Layout ──────────────────────── */
