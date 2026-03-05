@@ -46,7 +46,7 @@ const ScriptLibraryView = ({ appKey, onBack }) => {
                     return (
                         <div key={sKey} className="script-card">
                             <div className="script-card-header">
-                                <IconComp size={20} style={{ color: 'var(--accent-purple)' }} /> {script.name.replace(/\[.*?\]\s*/, '')}
+                                <IconComp size={20} style={{ color: 'var(--accent-yellow)' }} /> {script.name.replace(/\[.*?\]\s*/, '')}
                             </div>
                             <div className="script-card-target">
                                 目標：{app.name} (Port {app.port})

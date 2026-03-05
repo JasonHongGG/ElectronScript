@@ -4,7 +4,7 @@ import { useLogs } from '../hooks/useLogs';
 
 const GlobalLogPanel = ({ isHome }) => {
     const { logs, clearLogs, marquee } = useLogs();
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     // Auto-scroll effect could be implemented with a ref
     const logOutputRef = React.useRef(null);

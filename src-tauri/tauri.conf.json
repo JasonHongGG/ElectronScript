@@ -13,8 +13,8 @@
         "windows": [
             {
                 "title": "Electron Script Injector",
-                "width": 900,
-                "height": 560,
+                "width": 1000,
+                "height": 600,
                 "resizable": true,
                 "center": true,
                 "decorations": false

@@ -169,16 +169,16 @@ const AppManagementView = ({ appKey, onBack, onGoScripts }) => {
                 </div>
                 <div className="app-view-actions">
                     <button className="btn btn-primary" onClick={handleAppOpen} disabled={isOpening}>
-                        <Plus size={16} /> 智慧開啟
+                        <Plus size={16} /> 開啟
                     </button>
                     <button className="btn btn-warning" onClick={handleAppRestart} disabled={noInstances || isRestarting}>
-                        <RefreshCw size={16} /> 重啟掛載
+                        <RefreshCw size={16} /> 重啟
                     </button>
                     <button className="btn btn-danger" onClick={handleAppCloseAll} disabled={noInstances || isClosingAll}>
-                        <Power size={16} /> 全部關閉
+                        <Power size={16} /> 關閉
                     </button>
                     <button className="btn btn-warning" onClick={onGoScripts}>
-                        <Library size={16} /> 腳本庫
+                        <Library size={16} /> 腳本
                     </button>
                 </div>
             </div>

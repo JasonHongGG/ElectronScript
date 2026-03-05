@@ -31,11 +31,12 @@ function App() {
                 <div data-tauri-drag-region className="drag-region-overlay"></div>
                 <Titlebar />
 
+                <div className="integrated-logo">
+                    <Zap size={16} strokeWidth={2.5} style={{ color: 'var(--accent-yellow)' }} />
+                    <span>Electron Injector</span>
+                </div>
+
                 <div className="app-content">
-                    <div className="integrated-logo">
-                        <Zap size={16} strokeWidth={2.5} style={{ color: 'var(--accent-blue)' }} />
-                        <span>Electron Injector</span>
-                    </div>
 
                     {currentView === 'home' && (
                         <HomeView onSelectApp={goAppView} />
