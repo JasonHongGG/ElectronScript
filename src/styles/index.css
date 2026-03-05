@@ -73,7 +73,7 @@ body {
   height: 48px;
   z-index: 1000;
   /* Leaves the controls area clickable */
-  width: calc(100% - 140px);
+  width: calc(100% - 180px);
 }
 
 .integrated-logo {
@@ -148,6 +148,29 @@ body {
 .titlebar-btn.maximize:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+}
+
+/* Pin / Always-on-Top Toggle */
+.titlebar-btn.pin-toggle {
+  position: relative;
+}
+
+.titlebar-btn.pin-toggle svg {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s ease;
+}
+
+.titlebar-btn.pin-toggle:hover {
+  background: rgba(234, 179, 8, 0.15);
+  color: var(--accent-yellow);
+}
+
+.titlebar-btn.pin-toggle.active {
+  color: var(--accent-yellow);
+}
+
+.titlebar-btn.pin-toggle.active svg {
+  transform: rotate(-45deg);
+  filter: drop-shadow(0 0 4px rgba(234, 179, 8, 0.5));
 }
 
 /* Standard App Content */
