@@ -7,3 +7,11 @@ src-tauri/Cargo.lock
 
 # Optional: IDEs
 .vscode/
+dist/
+dist-ssr/
+*.local
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
