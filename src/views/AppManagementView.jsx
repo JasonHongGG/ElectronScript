@@ -17,16 +17,14 @@ const AppManagementView = ({ appKey, onBack, onGoScripts }) => {
     const fetchInstances = useCallback(async () => {
         try {
             const insts = await getInstances(app.processName);
+            // 按 PID 排序，確保順序穩定
+            insts.sort((a, b) => a.pid - b.pid);
+
             setInstances(prev => {
-                // If length differs, definitely update
-                if (prev.length !== insts.length) return insts;
-                // Deep compare PIDs and Ports to prevent scroll jump
-                const isDifferent = insts.some((inst, idx) =>
-                    inst.pid !== prev[idx]?.pid ||
-                    inst.port !== prev[idx]?.port ||
-                    inst.workdir !== prev[idx]?.workdir
-                );
-                return isDifferent ? insts : prev;
+                // 用序列化的 PID+port+workdir 簽名來比對，避免不必要的 re-render
+                const serialize = (list) => list.map(i => `${i.pid}:${i.port}:${i.workdir}`).join('|');
+                if (serialize(prev) === serialize(insts)) return prev;
+                return insts;
             });
         } catch (err) {
             log(`無法取得 ${app.name} 狀態: ${err}`, 'error');
