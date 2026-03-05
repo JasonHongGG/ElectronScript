@@ -11,87 +11,126 @@
 </head>
 
 <body>
-  <!-- 自訂標題列 (Titlebar) -->
-  <div data-tauri-drag-region class="titlebar">
-    <div class="titlebar-logo">
-      <i data-lucide="zap"></i>
-      <span>Electron Injector</span>
-    </div>
-    <div class="titlebar-controls">
-      <div class="titlebar-btn" id="titlebar-minimize"><i data-lucide="minus"></i></div>
-      <div class="titlebar-btn" id="titlebar-maximize"><i data-lucide="square"></i></div>
-      <div class="titlebar-btn close" id="titlebar-close"><i data-lucide="x"></i></div>
-    </div>
-  </div>
+  <div class="app-content-wrapper">
+    <!-- 整個視窗頂部區域都是可拖曳的 -->
+    <div data-tauri-drag-region class="drag-region-overlay"></div>
 
-  <div class="app-content">
-
-    <!-- Navigation Sidebar (Optional, or just a back button in headers) -->
-    <div id="nav-header" class="nav-header hidden">
-      <div class="nav-left">
-        <button id="btn-back" class="btn btn-icon btn-nav"><i data-lucide="arrow-left"></i> 返回</button>
+    <div class="app-content">
+      <!-- 絕對定位的視窗控制控制項 (右上角) -->
+      <div class="integrated-window-controls custom-style">
+        <div class="titlebar-btn minimize" id="titlebar-minimize" title="縮小"><i data-lucide="minus"></i></div>
+        <div class="titlebar-btn maximize" id="titlebar-maximize" title="最大化"><i data-lucide="square"></i></div>
+        <div class="titlebar-btn close" id="titlebar-close" title="關閉"><i data-lucide="x"></i></div>
       </div>
-      <div id="current-view-title" class="nav-title">VS Code</div>
-      <div class="nav-right">
-        <button id="btn-to-scripts" class="btn btn-icon btn-nav"><i data-lucide="library"></i> 腳本庫</button>
-      </div>
-    </div>
 
-    <!-- View: Home (入口) -->
-    <div id="view-home" class="view active">
-      <header class="header">
-        <h1>Script Injector</h1>
-        <p class="subtitle">自動化流程的終極武器</p>
-      </header>
-      <div class="section-title">選擇應用程式</div>
-      <div id="home-apps-grid" class="cards-grid">
-        <!-- JS 動態產生 App 捷徑卡片 -->
+      <!-- 絕對定位的 Logo (左上角) -->
+      <div class="integrated-logo">
+        <i data-lucide="zap"></i>
+        <span>Electron Injector</span>
       </div>
-    </div>
 
-    <!-- View: App Management (獨立 App 管理頁面) -->
-    <div id="view-app" class="view hidden">
-      <div class="app-management-header">
-        <h2 id="app-view-name">應用程式名稱</h2>
-        <div class="app-view-actions">
-          <button id="btn-app-open" class="btn btn-primary"><i data-lucide="plus"></i> 智慧開啟</button>
-          <button id="btn-app-restart" class="btn btn-warning"><i data-lucide="refresh-cw"></i> 重啟掛載</button>
-          <button id="btn-app-closeall" class="btn btn-danger"><i data-lucide="power"></i> 全部關閉</button>
+      <!-- Navigation Sidebar (Optional, or just a back button in headers) -->
+      <div id="nav-header" class="nav-header hidden">
+        <div class="nav-left">
+          <button id="btn-back" class="btn btn-icon btn-nav"><i data-lucide="arrow-left"></i> 返回</button>
+        </div>
+        <div id="current-view-title" class="nav-title">VS Code</div>
+        <div class="nav-right">
+          <button id="btn-to-scripts" class="btn btn-icon btn-nav"><i data-lucide="library"></i> 腳本庫</button>
         </div>
       </div>
 
-      <div class="section-title">運行中的標籤頁 (Instances)</div>
-      <div id="app-instances-list" class="instances-list">
-        <!-- JS 動態產生 Instance 列表 -->
-      </div>
+      <!-- View: Home (入口) -->
+      <div id="view-home" class="view active home-premium-layout">
 
-      <!-- Log Panel (Moved here or kept global) -->
-      <div class="log-panel mt-auto">
-        <div class="log-header">
-          <span><i data-lucide="terminal"></i> 系統日誌</span>
-          <button id="clear-log" class="btn-icon" title="清除紀錄">
-            <i data-lucide="trash-2"></i>
-          </button>
+        <div class="premium-cards-container">
+          <!-- VS Code Card -->
+          <div class="premium-card vscode-card" id="card-vscode">
+            <div class="card-bg-glow"></div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i data-lucide="code"></i>
+              </div>
+              <div class="card-text-container">
+                <h2 class="card-title">VS Code</h2>
+                <p class="card-desc">Visual Studio Code Injection</p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="status-indicator">
+                <div class="status-dot" id="dot-vscode"></div>
+                <span class="status-text" id="stats-vscode">檢查狀態中...</span>
+              </div>
+              <i data-lucide="arrow-right" class="card-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Antigravity Card -->
+          <div class="premium-card antigravity-card" id="card-antigravity">
+            <div class="card-bg-glow"></div>
+            <div class="card-content">
+              <div class="card-icon-container">
+                <i data-lucide="cpu"></i>
+              </div>
+              <div class="card-text-container">
+                <h2 class="card-title">Antigravity</h2>
+                <p class="card-desc">Native Sub-agent Backend</p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="status-indicator">
+                <div class="status-dot" id="dot-antigravity"></div>
+                <span class="status-text" id="stats-antigravity">檢查狀態中...</span>
+              </div>
+              <i data-lucide="arrow-right" class="card-arrow"></i>
+            </div>
+          </div>
         </div>
-        <div id="log-output" class="log-output"></div>
+
+      </div>
+
+      <!-- View: App Management (獨立 App 管理頁面) -->
+      <div id="view-app" class="view hidden">
+        <div class="app-management-header">
+          <h2 id="app-view-name">應用程式名稱</h2>
+          <div class="app-view-actions">
+            <button id="btn-app-open" class="btn btn-primary"><i data-lucide="plus"></i> 智慧開啟</button>
+            <button id="btn-app-restart" class="btn btn-warning"><i data-lucide="refresh-cw"></i> 重啟掛載</button>
+            <button id="btn-app-closeall" class="btn btn-danger"><i data-lucide="power"></i> 全部關閉</button>
+          </div>
+        </div>
+
+        <div class="section-title">運行中的標籤頁 (Instances)</div>
+        <div id="app-instances-list" class="instances-list">
+          <!-- JS 動態產生 Instance 列表 -->
+        </div>
+
+        <!-- Log Panel (Moved here or kept global) -->
+        <div class="log-panel mt-auto">
+          <div class="log-header">
+            <span><i data-lucide="terminal"></i> 系統日誌</span>
+            <button id="clear-log" class="btn-icon" title="清除紀錄">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <div id="log-output" class="log-output"></div>
+        </div>
+      </div>
+
+      <!-- View: Script Library (獨立腳本區塊) -->
+      <div id="view-scripts" class="view hidden">
+        <div class="script-library-header">
+          <h2>腳本庫 (Script Library)</h2>
+          <p class="subtitle text-sm">選擇腳本並注入到指定的應用程式實例中</p>
+        </div>
+
+        <div id="scripts-grid" class="cards-grid">
+          <!-- JS 動態產生各 App 專屬的腳本列表 -->
+        </div>
       </div>
     </div>
 
-    <!-- View: Script Library (獨立腳本區塊) -->
-    <div id="view-scripts" class="view hidden">
-      <div class="script-library-header">
-        <h2>腳本庫 (Script Library)</h2>
-        <p class="subtitle text-sm">選擇腳本並注入到指定的應用程式實例中</p>
-      </div>
-
-      <div id="scripts-grid" class="cards-grid">
-        <!-- JS 動態產生各 App 專屬的腳本列表 -->
-      </div>
-    </div>
-
-  </div>
-
-  <script type="module" src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 
 </html>

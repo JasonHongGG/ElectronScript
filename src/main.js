@@ -131,28 +131,31 @@ function goScriptsView() {
 
 // ── Renderers ────────────────────────────────────────────────
 function renderHome() {
-    homeAppsGrid.innerHTML = '';
-    for (const [key, app] of Object.entries(apps)) {
-        const card = document.createElement('div');
-        card.className = 'app-entry-card';
-        card.innerHTML = `
-            <div class="app-entry-header">
-                <div class="app-logo"><i data-lucide="${key === 'vscode' ? 'code' : 'cpu'}"></i></div>
-                <div class="app-entry-info">
-                    <h3>${app.name}</h3>
-                    <div class="app-entry-stats" id="stats-${key}">檢查狀態中...</div>
-                </div>
-            </div>
-        `;
-        card.addEventListener('click', () => goAppView(key));
-        homeAppsGrid.appendChild(card);
+    const btnVscode = document.getElementById('card-vscode');
+    const btnAntigravity = document.getElementById('card-antigravity');
 
+    if (btnVscode) btnVscode.onclick = () => goAppView('vscode');
+    if (btnAntigravity) btnAntigravity.onclick = () => goAppView('antigravity');
+
+    for (const key of ['vscode', 'antigravity']) {
         // Async update stats
         fetchInstances(key).then(instances => {
             const stats = document.getElementById(`stats-${key}`);
-            if (stats) stats.textContent = instances.length > 0 ? `運行中 (${instances.length} 個實例)` : '未運行';
+            const dot = document.getElementById(`dot-${key}`);
+            if (stats) {
+                if (instances.length > 0) {
+                    stats.textContent = `運行中 (${instances.length} 個實例)`;
+                    stats.style.color = 'var(--accent-green)';
+                    if (dot) dot.className = 'status-dot running';
+                } else {
+                    stats.textContent = '未運行';
+                    stats.style.color = 'var(--text-muted)';
+                    if (dot) dot.className = 'status-dot';
+                }
+            }
         });
     }
+
     if (window.lucide) lucide.createIcons();
 }
 
